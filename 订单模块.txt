@@ -1,0 +1,213 @@
+*** Settings ***
+Suite Setup         setup      order_item
+Suite Teardown      teardown
+Test Setup          case_setup
+Test Teardown       case_teardown
+Library             SeleniumLibrary
+Library             OperatingSystem
+Library             DatabaseLibrary
+Resource            xeshiziyuan.txt
+Library             AutoItLibrary
+
+*** Test Cases ***
+case-01
+      [Documentation]      门道购物基本功能
+      ${x}      Row Count      select * from scott.order_item where name='ipad' and quantity='123'      #读出数据库中表的行数，并赋值给x
+      ${y}      Evaluate      str(${x+1})      #x+1赋值并转换成字符串给y
+      log      1.打开网站
+      log      2点击自动化
+      Click Element      link=自动化测试课程      #link为定位符
+      Click Element      partial link=接口      #partial link部分定位
+      Click Link      自动化测试课程      #Click Link定位
+      log      3输入产品名称及数量
+      Wait Until Element Is Visible      id=pay      #显示等待网页下载成功
+      Input Text      id=ProductName      ipad
+      Input Text      name=Quantity      123
+      log      4点击提交
+      Click Element      id=submitBtn
+      log      5确认提交成功
+      Wait Until Page Contains      你购买了ipad，一共123件      #等待后台处理15秒，检查提示信息
+      Page Should Contain      你购买了ipad，一共123件      #检查方式1
+      log      5.1确认前端提示信息正确
+      ${X}      Get Text      id=msg      #检查方式2，获取文字内容
+      Should Be Equal      ${X}      你购买了ipad，一共123件。      #和获取的内容比较，是否一致
+      log      5.2确认购物车信息正确
+      Select Frame      fra      #进入iframe，当有多层时候需要添加多层
+      Select From List By Label      buy      产品:ipad,数量:123
+      log      5.3确认后台数据库信息正确
+      Comment      comment      PAUSED      #打断点
+      Check If Exists In Database      select * from scott.order_item where name='ipad' and quantity='123'      #确认至少有一行      #链接数据库的library
+      Wait Until Keyword Succeeds      30      1      Check If Exists In Database      select * from scott.order_item where name='ipad' and quantity='123'      #显示等待数据库处理
+      Row Count Is Equal To X      select * from scott.order_item where name='ipad' and quantity='123'      ${y}      #确认只有一行数据
+      log      6点击付款
+      Unselect Frame      #退出frame      #退出frame
+      Click Button      付款
+      Handle Alert      ACCEPT
+      log      切换到付款窗口
+      ${x}      Get Window Handles      #处理有title的弹出框
+      Select Window      ${x[-1]}
+      Select Window      付款      #处理有title的弹出框
+      log      输入银行卡号
+      Input Text      cardno      111111111111
+      Click Button      付款
+      Handle Alert      ACCEPT
+      log      >>>>>
+      sleep      3      #强制等待
+      Select Window
+
+case-02
+      ${x}      Row Count      select * from scott.order_item where name='ipad' and quantity='123'      #读出数据库中表的行数，并赋值给x
+      ${y}      Evaluate      str(${x+1})      #x+1赋值并转换成字符串给y
+      log      2点击自动化
+      Click Element      css=body > div.container > div.masthead > div > div > div > ul > li.active > a      #使用css定位
+      Click Element      partial link=接口      #partial link部分定位
+      Click Link      自动化测试课程      #Click Link定位
+      log      3输入产品名称及数量
+      Input Text      id=ProductName      ipad
+      Input Text      xpath=//*[@id="Quantity"]      123      #使用xpath定位
+      log      4点击提交
+      Click Element      id=submitBtn
+      log      5确认提交成功
+      Page Should Contain      你购买了ipad，一共123件      #检查方式1
+      log      5.1确认前端提示信息正确
+      ${X}      Get Text      id=msg      #检查方式2，获取文字内容
+      Should Be Equal      ${X}      你购买了ipad，一共123件。      #和获取的内容比较，是否一致
+      log      5.2确认购物车信息正确
+      Select Frame      fra      #进入iframe，当有多层时候需要添加多层
+      Select From List By Label      buy      产品:ipad,数量:123
+      log      5.3确认后台数据库信息正确
+      Comment      comment      PAUSED      #打断点
+      Check If Exists In Database      select * from scott.order_item where name='ipad' and quantity='123'      #确认至少有一行      #链接数据库的library
+      Row Count Is Equal To X      select * from scott.order_item where name='ipad' and quantity='123'      ${y}      #确认只有一行数据
+      log      6点击付款
+      Unselect Frame      #退出frame      #退出frame
+      Click Button      付款
+      Handle Alert      ACCEPT
+      log      切换到付款窗口
+      ${x}      Get Window Handles      #处理有title的弹出框
+      Select Window      ${x[-1]}
+      Select Window      付款      #处理有title的弹出框
+      log      输入银行卡号
+      Input Text      cardno      1111111111
+      Click Button      付款
+      Handle Alert      ACCEPT
+      Select Window
+      Click Element      datepicker
+      Click Element      xpath=//*[@id="ui-datepicker-div"]/table/tbody/tr[4]/td[4]/a
+      Execute Javascript      document.getElementById('datepicker').readOnly=false      #可以使用js执行
+      Input Text      datepicker      08/28/2018      #输入日期
+      sleep      5
+
+case_03
+      [Template]      canshuhua
+      ipad      123
+      fffff      333
+
+case-04
+      ${x}      Row Count      select * from scott.order_item where name='ipad' and quantity='123'      #读出数据库中表的行数，并赋值给x
+      ${y}      Evaluate      str(${x+1})      #x+1赋值并转换成字符串给y
+      log      2点击自动化
+      Click Element      css=body > div.container > div.masthead > div > div > div > ul > li.active > a      #使用css定位
+      Click Element      partial link=接口      #partial link部分定位
+      Click Link      自动化测试课程      #Click Link定位
+      log      3输入产品名称及数量
+      Execute Javascript      document.getElementById('ProductName').value="ipad"      #使用js输入并改变值
+      Execute Javascript      $("#Quantity").val("123")      #使用jquery去输入值
+      log      4点击提交
+      Click Element      id=submitBtn
+      log      5确认提交成功
+      Wait Until Page Contains      你购买了ipad，一共123件      #等待后台处理15秒，检查提示信息
+      Comment      Page Should Contain      你购买了ipad，一共123件      #检查方式1
+      log      5.1确认前端提示信息正确
+      ${X}      Get Text      id=msg      #检查方式2，获取文字内容
+      Should Be Equal      ${X}      你购买了ipad，一共123件。      #和获取的内容比较，是否一致
+      log      5.2确认购物车信息正确
+      Select Frame      fra      #进入iframe，当有多层时候需要添加多层
+      Select From List By Label      buy      产品:ipad,数量:123
+      log      5.3确认后台数据库信息正确
+      Comment      comment      PAUSED      #打断点
+      Check If Exists In Database      select * from scott.order_item where name='ipad' and quantity='123'      #确认至少有一行      #链接数据库的library
+      Row Count Is Equal To X      select * from scott.order_item where name='ipad' and quantity='123'      ${y}      #确认只有一行数据
+      log      6点击付款
+      Unselect Frame      #退出frame      #退出frame
+      Click Button      付款
+      Handle Alert      ACCEPT
+      log      切换到付款窗口
+      ${x}      Get Window Handles      #处理有title的弹出框
+      Select Window      ${x[-1]}
+      Select Window      付款      #处理有title的弹出框
+      log      输入银行卡号
+      Input Text      cardno      1111111111
+      Click Button      付款
+      Handle Alert      ACCEPT
+      Select Window
+      Click Element      datepicker
+      Click Element      xpath=//*[@id="ui-datepicker-div"]/table/tbody/tr[4]/td[4]/a
+      Execute Javascript      document.getElementById('datepicker').readOnly=false      #可以使用js执行
+      Input Text      datepicker      08/28/2018      #输入日期
+      sleep      5
+
+case-05
+      log      上传下载页面
+      Comment      Wait Until Element Is Visible      link=自动化测试课程
+      Click Element      link=自动化测试课程
+      Wait Until Element Is Visible      link=上传下载demo页面
+      Click Link      上传下载demo页面
+      Click Element      id=file
+      Win Wait      打开      \      20
+      Win Activate      打开
+      Control Set Text      \      \      Edit1      ${CURDIR}${/}xeshiziyuan.txt      #当前路径下的文件夹内容
+      Control Click      \      \      Button1
+      sleep       3
+
+*** Keywords ***
+case_setup
+      Execute Sql String      truncate table scott.order_item      #清理脏数据
+
+case_teardown
+      log      清理脏数据
+      Disconnect From Database      #释放数据库链接
+      Close Browser
+
+canshuhua
+      [Arguments]      ${name}      ${quantity}
+      ${x}      Row Count      select * from scott.order_item where name='${name}'and quantity='${quantity}';      #读出数据库中表的行数，并赋值给x
+      ${y}      Evaluate      str(${x+1})      #x+1赋值并转换成字符串给y
+      log      1.打开网站
+      log      2点击自动化
+      Click Element      link=自动化测试课程      #link为定位符
+      Click Element      partial link=接口      #partial link部分定位
+      Click Link      自动化测试课程      #Click Link定位
+      log      3输入产品名称及数量
+      Input Text      id=ProductName      ${name}
+      Input Text      name=Quantity      ${quantity}
+      log      4点击提交
+      Click Element      id=submitBtn
+      log      5确认提交成功
+      Comment      Page Should Contain      你购买了${name} ，一共${quantity}件。      #检查方式1
+      Wait Until Page Contains      你购买了${name}，一共${quantity}件      #等待后台处理15秒，检查提示信息
+      log      5.1确认前端提示信息正确
+      ${X}      Get Text      id=msg      #检查方式2，获取文字内容
+      Should Be Equal      ${X}      你购买了${name}，一共${quantity}件。      #和获取的内容比较，是否一致
+      log      5.2确认购物车信息正确
+      Select Frame      fra      #进入iframe，当有多层时候需要添加多层
+      Select From List By Label      buy      产品:${name},数量:${quantity}
+      log      5.3确认后台数据库信息正确
+      Comment      comment      PAUSED      #打断点
+      Check If Exists In Database      select * from scott.order_item where name='${name}' and quantity='${quantity}';      #确认至少有一行      #链接数据库的library
+      Row Count Is Equal To X      select * from scott.order_item where name='${name}' and quantity='${quantity}';      ${y}      #确认只有一行数据
+      log      6点击付款
+      Unselect Frame      #退出frame      #退出frame
+      Click Button      付款
+      Handle Alert      ACCEPT
+      log      切换到付款窗口
+      ${x}      Get Window Handles      #处理有title的弹出框
+      Select Window      ${x[-1]}
+      Select Window      付款      #处理有title的弹出框
+      log      输入银行卡号
+      Input Text      cardno      111111111111
+      Click Button      付款
+      Handle Alert      ACCEPT
+      log      >>>>>
+      sleep      3      #强制等待
+      Select Window

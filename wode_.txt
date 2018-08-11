@@ -1,0 +1,23 @@
+*** Test Cases ***
+yongli1
+      log      hello word
+      ${x}      Set Variable      10      #设置变量x为字符串10
+      ${y}      Set Variable      ${10}      #设置变量x为数值10
+      log      ${x}
+      ${l}      Create List      a      b      c      #['a','b','c']
+      : FOR      ${i}      IN      @{l}
+      \      log      ${l}
+      ${d}      Create Dictionary      china=中国      usa=美国
+      log      ${d['china']}
+      Run Keyword If      $x=='10'      log      ok      #if判断
+      Run Keyword If      $y=='10'      log      pok      #if判断
+      Should Be Equal      ${x}      10      \      #判断是否相等
+      Set Global Variable      ${ccc}      11121312
+
+yongli2
+      ${x}      Set Variable      ${3}
+      ${y}      Evaluate      $x+1
+      log      ${CURDIR}${/}xeshiziyuan.txt      #内置的变量,路径，
+      log      ${TEST_NAME}
+      log      %{PATH}
+      log      ${ccc}

@@ -1,0 +1,23 @@
+*** Settings ***
+Library             SeleniumLibrary
+Library             OperatingSystem
+Library             DatabaseLibrary
+
+*** Variables ***
+${ip}               192.168.35.128
+
+*** Keywords ***
+setup
+      [Arguments]      ${table_name}
+      log      预制条件
+      Connect To Database      pymysql      scott      tester      passwd      192.168.35.128      3306
+      ...      utf8      #使用databaselibrary
+      OperatingSystem.Run      taskkill /f /im chromedriver.exe      #杀残留的chromedrive进程
+      Execute Sql String      truncate table scott.order_item      #清理脏数据
+      log      1.打开网站
+      Open Browser      http://${ip}/mt/      chrome
+
+teardown
+      log      清理脏数据
+      Disconnect From Database      #释放数据库链接
+      Comment      Close Browser
